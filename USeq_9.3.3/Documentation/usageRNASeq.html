@@ -1,0 +1,86 @@
+<html>
+<head>
+	<title>Extended Splice Junction RNA-Seq Analysis with USeq</title>
+<style type="text/css">
+	#rt{text-align:right; color: #000000; font-weight: bold}
+	#grBk {background-color: #CC9966;}
+	TD {font-family: Verdana, Arial, Helvetica, sans-serif; font-size:12;}
+	H1 {color: #996633; font:arial; font-size:14;}
+	H2 {color: #996633; font:arial; font-size:12;}
+	BODY {color:black; background-color:white; font-family: Verdana, Arial, Helvetica, sans-serif; font-size:12;}
+	LI {margin-top:6px;}
+	A:link    {text-decoration: none; color: #000000; font-weight: bold}  
+	A:visited {text-decoration: none; color: #000000; font-weight: bold}   
+	A:hover   {text-decoration: none; color: #FFCC66; font-weight: bold} 
+	A:active  {text-decoration: none; color: #000000; font-weight: bold}   
+</style>
+</head>
+<H1>Extended Splice Junction RNA-Seq Analysis with USeq</H1>
+<br>
+<body>
+
+
+<h2>To create a novoindex with extended splice junctions:</h2>
+<ol>
+<li> Create a multi-fasta file containing extended splice junctions matched to your target read length minus 4bp using the USeq MakeTranscriptome app.
+	<ol>
+		<li> Download from UCSC an Ensembl transcript table, use the "output file: selected fields from primary and related tables" to 
+	   		select: name chrom strand txStart txEnd cdsStart cdsEnd exonCount exonStarts exonEnds name2.
+	   	<li> Optional but recommended, toss annotations to non standard chromosomes (e.g. chrUn_XXX, chrXX_ctg5_XXX, chrXX_g100XXX).  These contain unassembled and different variations of the reference chromosomes.  They add duplicate identical sequence too so that reads will sometimes match to both the variant and the reference and are scored as non unique hits.
+		<li> Use the USeq <a href="cmdLnMenus.html#PrintSelectColumns">PrintSelectColumns</a> app to move the name2 column before name.  This places the ensembl gene name first and the transcript name second. 
+	  		 Note, Excel won't work here. (e.g. java -jar -Xmx2G ~/AppsUSeq/PrintSelectColumns -i 10,0,1,2,3,4,5,6,7,8,9 -f mm9EnsTrans.ucsc) . Either remove the header line or place a # at it's start.
+		<li> Run the USeq <a href="cmdLnMenus.html#MakeTranscriptome">MakeTranscriptome</a> app to generate extended splice junctions. The splice junction radius should be set to your read length minus 4. 
+	   		This is a time and memory intensive.  If needed, split by chromosome and run on a cluster.  
+	   		(e.g. java -jar -Xmx22G ~/USeqApps/MakeTranscriptome -n 10000 -m 5 -f /Genomes/Mm10/Fastas -u mm10EnsTrans_Corr.ucsc -r 46)
+	</ol>
+<li> Place the splice junction fasta file in the fasta genome directory and run novoindex.  It is a good idea to include a chromosome with adapter 
+       sequence combinations as well as a chromosome with phiX sequence. It is also recommended to exclude non standard chromosomes that could potentially provided duplicate identical sequence causing unique matches to look non unique.
+       (e.g. ~/BioApps/novocraft/novoindex mm9EnsTransRad46Num100kMin10SplicesChrPhiXAdaptr.novoindex Fastas/* )	  
+       
+<li> Share your novoindex and splice junction files by uploading your data into an Analysis Report in GNomEx! Novoindexes, gene, and transcript files are available for many species and genome builds, 
+see <a href="https://bioserver.hci.utah.edu:443/gnomex/gnomexGuestFlex.jsp?topicNumber=4"> UBioCore Transcriptomes</a>.
+</ol>
+<p>
+<br>
+
+<h2>To align and process your Illumina fastq RNA-Seq data:</h2>
+<ol>
+<li> Align your fastq data using novoalign and the read length matched extended splice junction novoindex.  Output the reads in SAM format and allow for 50 
+       repeat matches for each read. Limit the maximum alignment quality to 120 ~ 4 mismatches per alignment. Use grep to toss @SQ lines and those reads that don't align.
+       Also, be sure to test your gzip compressed fastq files.  Novoalign doesn't throw an error when encountering a broken gzip file.
+       (e.g.  gunzip -t *gz && ~/novocraft/novoalign -o SAM -r All 50 -t 120 -a  
+       -d ~/mm9EnsTransRad46Num10kMin5SplicesChrPhiXAdaptr.novoindex -f *fastq.gz | grep -v ^@SQ  | grep chr | gzip > raw.sam.gz )
+
+</ol>
+Note, these alignments are not ready for use.  The splice-junction coordinates need to be converted to genomic coordinates by running the 
+<a href="cmdLnMenus.html#SamTranscriptomeParser">SamTranscriptomeParser</a> or the <a href="cmdLnMenus.html#RNASeq">RNASeq</a> app. (e.g. java -jar -Xmx4G ~/AppsUSeq/SamTranscriptomeParser -a 90 -f 7410X6_s_5_raw.sam.gz Sam headers are created automatically.)
+<p>
+<br>
+       
+<h2>To analyze your processed RNA-Seq data:</h2>
+The easiest option is to run the <a href="cmdLnMenus.html#RNASeq">RNASeq</a> application on your raw sam alignment files.  This executes many USeq applications and is a good starting point.<br>
+<br>
+Custom Analysis:
+<ol>
+<li> Convert splice-junction coordinates to genomic coordinates by running the <a href="cmdLnMenus.html#SamTranscriptomeParser">SamTranscriptomeParser</a>  (e.g. java -jar -Xmx4G ~/AppsUSeq/SamTranscriptomeParser -a 90 -f 7410X6_s_5_raw.sam.gz Sam headers are created automatically.)
+<li> Generate relative read/ depth coverage graphs using the USeq <a href="cmdLnMenus.html#Sam2USeq">Sam2USeq</a> apps. These can be visualized in IGB (and UCSC Genome Browser if you upload your data to GenoPub) to show the sequence depth over every base.  
+<li> Run the <a href="cmdLnMenus.html#DefinedRegionDifferentialSeq">DefinedRegionDifferentialSeq</a> to score known annotation for differential expression using Loves et. al. DESeq2 package and your processed BAM files.
+    <ol>
+    <li> First create a gene table containing collapsed transcripts using the modified transcript table downloaded from UCSC, see above. This should contain 
+       the following columns: geneName transcriptName chrom strand txStart txEnd cdsStart cdsEnd exonCount exonStarts exonEnds.  Use the USeq 
+       <a href="cmdLnMenus.html#MergeUCSCGeneTable">MergeUCSCGeneTable</a> app to merge any transcripts that share the same geneName.  Exons are maximized, introns minimized.
+       (e.g. java -jar -Xmx4G ~/AppsUSeq/MergeUCSCGeneTable -u mm9EnsTrans_Corr.ucsc )
+    <li> Install R and the DESeq2 package, see http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html
+    <li> Run the <a href="cmdLnMenus.html#DefinedRegionDifferentialSeq">DefinedRegionDifferentialSeq</a> app to score genes (or other defined regions) for differential expression and alternative splicing 
+       (e.g. java -Xmx4G -jar ~/AppsUSeq/DefinedRegionDifferentialSeq -c /Data/PolIIConditions -s PolIIResults/ -u /Anno/mm9EnsGenes.ucsc.gz -g H_sapiens_Feb_2009)
+    </ol>  
+<li> Upload your analysis into an Analysis Report in GNomEx and post your data tracks!
+</ol>
+<p>
+<br>
+
+
+</body>
+</html>
+
+

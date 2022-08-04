@@ -1,0 +1,589 @@
+See the github release notes and commits for changes to the apps.
+
+----USeq_9.0.1----
+SamAlignmentExtractor
+* Fixed an issue when using the -x option to keep off target reads in the pass file.  Whole chromosomes we're being dropped when the target bed file didn't contain any regions for the chromosome.
+
+----USeq_8.9.8----
+VCFRegionFilter
+* Simple app for rapidly splitting vcf files into those that intersect a bed file. Uses super fast IntervalTrees.
+ArupPipelineWrapper
+* New app that wraps Pipeline.jar for snakemake rule incorporation. Supports the QC, Annotation, and Review Directory generation
+Consensus
+* Modified defaults to require 7 good barcode bases and 0.875 identity before inclusion in a family
+StrelkaVCFParser
+* Added read depth and allelic freq to info column
+VCFMerger
+* Lots of mods to support Strelka and Lofreq merging
+
+----USeq_8.9.7----
+SamSVFilter
+* Corrected a bug where paired end reads that aligned to one target region but their mate aligned elsewhere were not being saved to the single bam file
+SamAlignmentExtractor
+* Added an option to write off target reads to the pass bam file. Needed for translocation detection.
+VCFRegionMarker
+* New app for intersecting a vcf records with regions and add the bed text to the vcf filter field.  Good for flagging variants by position.
+StrelkaVCFParser
+* Lots of mods to calculate allelic ratios for INDELS and SNVs
+LofreqVCFParser
+* New app for modifying Lofreq output, primarily as a means to join with Strelka
+SamComparator
+* Added option to process just the first chromosome of data
+Sam2USeq
+* Modified the pass/fail file naming to better integrate with Snakemake
+
+----USeq_8.9.6----
+Sam2USeq
+* Modified the per region spreadsheet to show the FracBPs>= xxx to be defined by the users minimum coverage setting.
+* Now gzipping pass and fail bed file outputs 
+MatchMates
+* New app for joining second of pair alignments to their first of pair attributes fields.  Use with FastqBarcodeTagger and Consensus. 
+Consensus
+* New app that clusters alignments by position and molecular barcode then calls consensus on the clustered alignments outputing fastq for realignment.
+
+----USeq_8.9.5----
+Sam2USeq
+* Added a failed bed region output for those target bases with less than the indicated depth.  Good for identifying holes in particular locations, and deletions.
+Sam2USeq, CalculatePerCycleErrorRate, SamAlignmentExtractor, MergePairedAlignments
+* Added option to export key QC metrics in json format
+* Moved base summary stats to MergePairedAlignments to get a more accurate uniOb count for total, Q20, and Q30 
+MergeRegions
+* Fixed issue of running this on java 1.7+ with contract sort violation
+MpileupParser
+* New App for parsing a SAMTools mpileup output file for non reference bases generating PointData for the reference, non reference, and fraction non reference for bases that pass the minimum read coverage filter.
+Histogram
+* Changed counters to use long instead of int to avoid overflow, this affects ~10 apps
+MultiSampleVCFFilter
+* Fixed an issue with filtering records that contain no genotype quality GQ field. These were being failed and removed.
+FastqBarcodeTagger
+* New app for adding barcode reads from a third fastq file to paired fastq file headers, supports interlaced output for direct piping into downstream apps (recommended).
+
+----USeq_8.9.4----
+SamAlignmentExtractor
+* Rewrote the app to enable processing deep coverage datasets without exceeding memory requirements. Added lots of QC metrics.
+BamBlaster
+* New app for injecting snv and indel variants from a vcf file into a bam file
+BamMixer
+* New app for mixing BamBlaster alignments into different frequency tumor samples
+VCFMutationMaker
+* New app to generate vcf files with random snvs and indels over target regions for BamBlaster
+
+----USeq_8.9.3----
+Bed2UCSCRefFlat
+* New app for converting a bed file to a multi exonic UCSC RefFlat file.
+Sam2USeq
+* Fixed an issue where chromData from the MergePairedAlignments app fail to cal read coverage with b37 no "chr" data.  Now must match the bed file with the alignments.
+
+----USeq_8.9.2----
+PoReCNV
+* New app for detecting CNV variants in large sets of exon or gene capture panels.  Wraps an algorithm by Alun Thomas.  
+
+----USeq_8.9.1----
+CollectBamStats
+* Fixed an issue with setting thresholds for flagging datasets. 
+MergePairedAlignments
+* Fixed an issue when merging bam files with recalibrated base scores. GATK is boosting their base score values past spec.
+CalculatePerCycleErrorRate
+* Dropped support for unsorted sam.gz files, this was causing issues with files that had no phiX.
+
+----USeq_8.9.0----
+MethylationArrayScanner
+* Added option to generate coefficient of variation bar files for both visualization and analysis.  Use them in second run to find windows with significant extra variation. Note, use the PermFDR, not the Wilcoxon since the latter needs many data points.
+VCFMerger
+* New app for merging VCF files with same sample names into one.  Hashes header to collapse. Those with the same ID are also dropped. Will not work with downstream apps that cannot process mixed INFO and FORMAT records.
+MuTechVCFParser
+* Reversing the parsed output Tumor Normal columns for compatibility with SomaticSniper and Strelka
+
+----USeq_8.8.9----
+FilterIntersectingRegions
+* Added a max gap option and support for splitting ucsc ref flat files.
+MergeOverlappingGenes
+* Merges transcript models that share a minimum fraction exonic bps. Good for collapsing Cufflinks transcripts.
+VCFComparator
+* More modifications to support bed format variant info for somatic key test analysis
+MultiSampleVCFFilter
+* Fixed issue with processing gzipped vcf files when a tabix exe isn't provided
+SomaticSniperVCFParser
+* New app for inserting quality score into QUAL field and option for score filtering
+VCFNoCallFilter
+* New app for removing vcf records where too few background samples pass QC or are no calls.  Better than filtering by capture target region.
+MuTechVCFParser, SomaticSniperVCFParser, StrelkaVCFParser
+* New apps for manipulating these flavors of vcf files
+
+----USeq_8.8.8----
+VCFComparator
+* Major bug! The filter for selecting vcf variants for those in common regions was inadvertently disabled. Ugg! To find out if your prior analysis as affected, look at the # of pre and post filtered variants these should differ, if not discard! Drat!
+
+----USeq_8.8.7----
+ReadCoverageParser
+* Renamed to CollectBamStats
+* Added a bunch of functionality to collect both read coverage data and alignment stats from the MergePairedAlignments and Sam2USeq apps
+MergePairedAlignments
+* Threaded app, generates ChromData for direct import into Sam2USeq; 3x faster overall.
+DefinedRegionDifferentialSeq
+* Updated DESeq2 scripts to support latest rlog method names
+* Added option to disable independent filtering
+Several apps dependent on the POI Excel library
+* Updated the POI classes to work, was causing several apps to error out on launch.
+VarScanVCFParser
+* Fixed an issue where the ssc score wasn't getting copied into the QUAL field
+
+----USeq_8.8.6----
+BisSeq
+* Added another catch for missing stranded datasets from targeted capture experiments that were throwing null pointer errors.
+BisStatRegionMaker
+* Added option to set R path. 
+Sam2USeq
+* Added option to output base level read coverage PointData in bar format for AggregatePlotter
+CalculatePerCycleErrorRate
+* Added option to process 1st and 2nd reads separately
+ReadCoverageParser
+* Parses output of Sam2USeq to plot many read coverage plots and flag samples that fail set thresholds for coverage
+MergePairedAlignments
+* New app focused on H1K QC.  Works with either queryname or coordinate sorted bams. 
+VCFComparator
+* Added option to use a bed file of key variants instead of a vcf file to allow wiggle in BamSurgeon generated variants 
+
+----USeq_8.8.5----
+MultiSampleVCFFilter
+* Added option to filter by region
+* Cleaned up chunking issues when no chunking is indicated
+VarScanVCFParser
+* New app to extract SOMATIC calls and replace QUAL score with the ssc score.
+SamAlignmentExtractor
+* Added option to output alignments that don't intersect the regions. 
+BamSurgeonMutator
+* Generates random mutations in a list of regions for the BamSurgeon application
+BisStat
+* Fixed an issue where some runs were throwing a comparator contract sort error due to lack of data in a particular base context and thus null fraction values
+
+----USeq_8.8.4----
+MergeSams
+* Created a new app to merge sam and bam files.  Creates a stripped header from the files if one isn't provided.  This won't play nicely with downstream GATK or Picard apps. Have yet to find at good app for doing this, SamTools and Picard's are riddled with error/ validation headaches.
+DefinedRegionDifferentialSeq
+* Added catch for alignments that are run off the end of the last reported base in a chromosome
+SamSplitter
+* New app for splitting a sam file in half. Randomly assigns paired read groups to either half.
+VCFComparator
+* Removed requirement that read depths are provided for the alleles.  Added a skip for finding common regions when the same bed file is provided.
+
+----USeq_8.8.3----
+VCFComparator
+* Added option to ignore the alt comparison when scoring whether the test and key match.  Thus just scores the position.
+* Fixed an issue where SNP's with two alternates were called as a non SNP.
+Telescriptor
+* Added new app to score two transcriptomes for possible telescripting and 3' UTR changes
+DefinedRegionDifferentialSeq
+* Added patch to fix DESeq2 rLog method call.  Thanks Russ Bell!
+
+----USeq_8.8.2----
+ReferenceMutator
+* New app that takes a directory of fasta chromosome sequence files and converts the reference allele to the alternate provided by a snp mapping table.
+SamComparator
+* New app that compares two sam/bam files and splits those into matching and non matching based on coordinates.  Good for allele specific expression analysis.
+DefinedRegionDifferentialSeq
+* Added option to collect counts from the 5' and 3' ends of genes
+DifferentialReadCoverageComparator
+* Takes the count table generated by DRDS with the -z option and looks for changes in 5'/3' read coverage between different conditions to identify short truncated transcripts
+RandomMutationGenerator
+* Creates snvs and indels for the BAMSurgeon application
+
+----USeq_8.8.1----
+VCFSpliceAnnotator
+* Relaxed the thresholds for calling a novel or damaging an existing splice junction
+ChIPSeq, RNASeq, MultipleReplicaScanSeqs
+* Updated each to utilize the new DESeq2 algorithm.
+
+----USeq_8.8.0----
+DefinedRegionDifferentialSeq
+* Updated DESeq to DESeq2, major changes, different dispersion fit, different log2Rto calculation, automatic independence filtering.  All results in more diff expressed genes compared to the older depreciated methods. Old diff genes are pretty much a subset of new diff genes.
+
+----USeq_8.7.9----
+RNAEditingScanSeqs and DefinedRegionRNAEditing
+* Added option to exclude base observations where the editing was > 0 and supported by only one read
+DefinedRegionDifferentialSeq
+* Added a requirement that exons included in differential splicing have 10 or more reads in both t and c samples
+* Added a relative log2Rto diff exon splicing graph for each comparison
+* Exported the coordinates of the exon with the biggest diff log2Rto instead of just the index
+
+----USeq_8.7.8----
+BisStat
+* Added fix for single stranded lambda datasets, these were crashing the app when calculating the non-conversion rate.
+AllelicMethylationDetector
+* Added fix for single stranded datasets, this was tossing chromosomes of data that didn't have both a plus and minus strand.
+VCFComparator
+* Added a catch for GQ scores that are floats instead of ints, was causing app to crash.
+
+----USeq_8.7.7----
+PullMatchingAlignments
+* New app that writes out alignments that match read names contained in a second file.  The output is the alignment in sam format, 
+preceded by true/false, depending on alignment status.
+ScoreSequences
+* Added two additional columns: 1) list of motif locations within the read and 2) top-scoring motif location within the read.
+VCFSpliceAnnotator
+* Bug fix for vcf output where vcf records with no changes were being truncated
+VCFComparator
+* Added catch for cases where no vcf records made it through the filtering.  These were crashing the application with some datasets.
+
+----USeq_8.7.6----
+SamTranscriptomeParser & DefinedRegionDifferentialSeq
+* Replaced the IH tag with NH tag for reporting the number of alignments present per read to be compatible with DEXSeq's HTSeq app.
+SamReadDepthSubSampler
+* New app for reducing extreme read depths in amplicon based sequencing datasets
+VCFSpliceAnnotator
+* Converted max ent scan scores to z-scores
+
+----USeq_8.7.5----
+DRDSAnnotator
+* Initial Check-in of DRDSAnnotator application
+SamSVFilter and SamSVJoiner
+* Two new apps for processing alignments used in detecting structural variation detection
+ScanSeqs
+* Fix for FDR graph tracks where in some cases all were shown as negative
+DefinedRegionDifferentialSeq
+* Added option to run SamSeq instead of DESeq
+VCFSpliceAnnotator
+* Added vcf output and sj annotations
+* Multiple testing correction for pvalues
+
+----USeq_8.7.4----
+MiRNACorrelator
+* Added a catch to skip calculating stats on bins with only one value
+* Fixed bug with the ordering of the bins in the ggplot
+NovoalignBisulfiteParser
+* Added an option to first call Picard's SortSam and MarkDuplicates
+BisSeqAggregatePlotter
+* Fixed a bug that would result in no output data. This bug only occurs when the first encountered chromosome has no data in any of it's regions
+Gr2Bar
+* Users can now specify orientation when running this app.
+MicrosatelliteCounter
+* Initial check-in of Microsatellite counter application.
+VCFSpliceAnnotator
+* New app for scoring vcf files for gain or loss of splice junctions using the MaxEntScan algorithms.
+
+
+----USeq_8.7.3----
+DefinedRegionDifferentialSeq
+* Changed the default minimum read count threshold to 20 from 10.  This lower number was allowing too many low hit genes into the multiple testing correct and causing the FDRs to be significantly lower than necessary.
+VCFComparator
+* Added checks to convert 0|1 genotypes to 0/1, and 1/0 calls to 0/1; these are needed to standardize the calls and enable genotype matching with the NIST key
+SamTranscriptomeParser
+* Bug fix for merging paired alignments where an insertion occurred immediately before the start of the second read
+MultiSampleVCFFilter
+* Fixed the behavior of the -M flag, wasn't intersecting the proper samples
+VCFSample
+* The GATK HaplotypeCaller reports InDels with no coverage depth, which would break USeq VCF applications.  If the sample has no coverage depth '.', the
+  sample is no marked as a 'no call'
+SamSVFilter
+* New application to filter name sorted, novo raw output, for alignments indicative of structural variation
+
+----USeq_8.7.2----
+RNAEditingScanSeqs & DefinedRegionRNAEditing
+* Added ability to set the minimum base read coverage threshold, defaults to 5 alignments
+DefinedRegionDifferentialSeq
+* Fixed an issue with recognizing a failed glm fit error message that was being inappropriately ignored leading to reduced FDRs in some cases.
+BisStat
+* Extensive modifications to support data from only one stand, prior to these chromosomes were skipped,  needed for amplicon datasets.
+ScoreMethylatedRegions
+* Modifications to support datasets lacking whole strands, needed for amplicon data.
+DefinedRegionBisSeq
+* Modifications to support datasets lacking whole strands, needed for amplicon data.
+BisSeq
+* Modifications to support datasets lacking whole strands, needed for amplicon data.
+
+----USeq_8.7.1----
+DefinedRegionDifferentialSeq
+* Fixed bug when DESeq was outputting FDRs with "NA", these were being assigned the max FDR, switched it to 0.  
+Note, this won't effect standard analysis since these genes also have a log2 of 0 and wouldn't survive standard log2Ratio thresholding.
+NovoalignBisulfiteParser
+* Fixed a bug in the -b4 novoalignment parsing
+* Remove support for native novoalign format, just sam/ bam now.
+
+----USeq_8.7.0----
+SRAProcessor
+* Added option to set quality score offset to 64, needed for some Illumina datasets
+MiRNACorrelator
+* Added ggplot2 box whisker plot functionality
+MaxEntScan Score3 and Score5
+* Java implementation of Yeo and Burge's Max Ent Scan algorithms for human splice site detection
+NovoalignBisulfiteParser
+* Added functionality for processing -b4 novoalignments
+* Enabled merging of paired overlapping reads for sam formatted alignments
+
+----USeq_8.6.9----
+VCFSample
+* Changed how it recognizes a no call to anything that starts with ./. so these are skipped
+DefinedRegionDifferentialSeq
+* Added a System.setProperty("java.awt.headless", "true") to allow running app in non x11 mode.
+FilterIntersectingRegions
+* Added option to split gtf/ gff files
+
+----USeq_8.6.8----
+MethylationArrayScanner
+* Removed a requirement that non paired analysis contain matching t vc samples
+CHPCAligner
+* Modified to work with the kingspeak cluster
+MiRNACorrelator
+* New application for associating changes in miRNA and gene expression values
+USeq2UCSCBig
+* Added catch to rename broken useq archives so these are skipped in subsequent autoconversion
+
+----USeq_8.6.7----
+ExportExons
+* Added name score and strand to the output
+DefinedRegionDifferentialSeq
+* Fixed a bug where genes with excessive counts were still being included in the DESeq analysis
+* Added a check for splice analysis with one gene
+USeq2UCSCBig
+* Added a sandbox to the UCSC executables to limit memory and time on linux systems
+SamTranscriptomeParser
+* Added another check for malformed sam records
+
+----USeq_8.6.6----
+DefinedRegionDifferentialSeq
+* Fixed an error where improperly paired reads weren't counted towards a gene's coverage. This only affected stranded analysis.
+Now, the -j and -p options work properly on stranded analysis.
+* Fixed issue with running a no replica multiple condition analysis where DESeq was exiting with an error.
+ScoreSequences
+* Modified output to table format, including score summary and each hit
+
+----USeq_8.6.5----
+EnrichedRegionMaker
+* Enabled the app to work with .swi, .swi.gz, and .swi.zip files
+BisStat & BisSeq
+* Autoconverting bar directories to useq archives
+DefinedRegionDifferentialSeq
+* Major rewrite to incorporate all sample normalization into DESeq
+* Added direct formated output to actual Excel xlsx document
+
+----USeq_8.6.4----
+DefinedRegionDifferentialSeq
+* Added internal check to remove edgeR analysis and proceed if the app throws errors.
+SamSubsampler
+* New app to subsample a sam/bam file after filtering and randomizing.  Needed for comparing read coverage graphs.
+BisStat
+* Added option to export base level log 2 ratio of fraction methylation in T vs C graphs.
+* Renamed graph folders to indicate Base or Window level data  
+
+----USeq_8.6.3----
+MethylationArrayDefinedRegionScanner
+* Modified app so it works with non even numbers of t and c
+SamParser
+* Modified the way the mid point of an alignment is calculate.  It is now the alignment start + 1/2 the read length. Did this to avoid problems with splice junction reads.
+* Set the bam file reader stringency to silent.
+
+----USeq_8.6.2----
+RNAEditingScanSeqs
+* Added a minimum base fraction edited option to app to restrict what base observations are allowed into the analysis.
+RNAEditingPileUpParser
+* Fixed a bug where the parser was counting all of the reference reads (both plus and minus) when scoring a base for editing instead of just reads mapping to the matched strand when a stranded parsing was selected.
+
+----USeq_8.6.1----
+RandomizeTextFile
+* Added ability to process all files in a directory.
+* Gzipping output.
+FetchGenomicSequences
+* Enabled working with gzipped fasta data
+DefinedRegionDifferentialSeq
+* Added ANOVA-like edgeR analysis to the output for runs with more than 2 conditions.
+
+----USeq_8.6.0----
+NovoalignBisulfiteParser
+* Added option to parse xxx.bam files
+* Removed -u unique alignment option since this only works with native novo format and was confusing the sam folks
+SamTranscriptomeParser
+* Fixed a bug with merging paired RNASeq datasets that was causing the strand to be incorrectly assigned to the merged alignment.
+
+----USeq_8.5.9----
+MethylationArrayScanSeqs
+* Renamed to MethylationArrayScanner
+* Fixed a bug with genome versions that was causing the app to throw a null pointer error and exit.
+* Fixed a bug where the last observation in a window was not always included in the summary stats.
+MethylationArrayDefinedRegionScanner
+* New app, companion to MAS, user defined regions are scored instead of a window scanning.
+
+----USeq_8.5.8----
+SamTranscriptomeParser
+* Modified app to gzip temp files and when a header is provided to directly write out the results without an intermediate file.  Should cut down on disk usage.
+NovoalignBisulfiteParser
+* Reduced the default thresholds for minimum base quality to 13.  New bis-seq data is showing reduced qualities (probably due to different calibration) causing some datasets to show a significant reduction in data.
+* Added a fraction bases passing base quality to report out this statistic and flag such cases.
+VCFComparator
+* Added a new spreadsheet of just dFDR and TPR for each sample when more than one to make graphing easier.  
+
+----USeq_8.5.7----
+MultiSampleVCFFilter
+* Added option to filter on VQSLOD scores
+MethylationArrayScanSeqs
+* New app for identifying DMRs from array based methylation assays.  Will work for other types of array data too.
+
+----USeq_8.5.6----
+DefinedRegionRNAEditing
+* Added option to perform stranded analysis.
+MultiSampleVCFFilter
+*Added additional filtering options.  Now supports Tabix instead of standard gzip.
+VCFAnnotator
+*New app that annotates a VCF file with information from several different databases.  The user has the option of selecting the set of 
+annotations they want or can use the default set.
+VCFReporter
+*New app that converts an annotated VCF file into tabular report, comapatible with excel. User can select which annotations to include in 
+the report
+ParseExonMetrics
+*New app that reads in the output from several different diagnostic programs and creates a PDF document summarizing the metrics.
+SamTranscriptomeParser
+*Added option to flip the orientation of both reads.  This is for cosmetic purposes only.  It allows user to see reads in the same
+orientation as the gene.
+
+----USeq_8.5.5----
+Ketchup
+* New app that cleans up big old files in user's Tomato job directories
+Sam2USeq
+* Added mean, median, min, max coverage stats for users defined regions
+VCFComparator
+* New app for comparing a key of trusted variant calls to a test vcf file. Generates stats for ROC curves and allows unambiguous comparisons between processing pipelines.
+RNAEditingScanSeqs
+* Added option to perform stranded analysis.
+
+----USeq_8.5.4----
+MultiSampleVCFFilter
+* New app for splitting multiple sample vcf file(s) records into those that pass or fail a variety of conditions and sample level thresholds
+DefinedRegionDifferentialSeq
+* Set the validation strigency on the Picard SAMReaders to silent
+
+----USeq_8.5.3----
+DefinedRegionRNAEditing
+* New app for scoring user defined regions for RNAEditing, similar stats to RNAEditingScanSeqs
+
+----USeq_8.5.2----
+RNAEditingScanSeqs
+* Added FDR estimation for clustered edited sites
+AggregatePlotter
+* Added check for regions calling for non existant point data
+
+----USeq_8.5.1----
+MergePairedSamAlignments
+* Fixed bug when merging bam files where double line returns where causing Picard's SortSam to error out.
+VCFTabix
+* New app for recursing through directories and tabix indexing vcf files
+USeq2UCSCBig and UCSCBig2USeq
+* Added new options for skipping for forcing overwrite of already converted files
+* Added options to silence all but error messages
+CalculatePerCycleErrorRate
+* Added ability to work with unsorted sam files
+* Added option to require read names start with a given prefix.  Novoalign is adding in some junk reads to their output?
+MergeUCSCGeneTable
+* Fixed bug where 1bp terminal exons were being skipped causing the conversion of bed12 useq files to bb to throw an error.
+SamTranscriptomeParser
+* Fixed bug where insertions or deletions that occurred at the splice junction were causing the failure to insert an appropriate number of Ns
+
+----USeq_8.5.0----
+CalculatePerCycleErrorRate
+* New app for calculating the per cycle error rate from phiX alignments.
+MergePairedSamAlignments
+* Modified so that it doesn't merge phiX alignments so that the CalculatePerCycleErrorRate app can be used on merged data.
+* Removes chrAdapt* alignments automatically, no option to not remove.  These are saved to the bad alignment file.
+
+----USeq_8.4.9----
+SamAlignmentExtractor
+* Now requiring that users provide a file name to save data.
+* Updated Picard and Sam tool jars to 1.8.3.  The old 1.6.5 was causing duplication of some extracted reads.  Bad bug in Picard package!
+MergePairedSamAlignments
+* Added option to skip merging to enable testing of merge effect on downstream analysis.
+* Added option to merge all alignments or just those that overlap (now the default).
+* Minor modifications to how insert and overlap are calculated, now done on all pairs.
+RNAEditingPileUpParser
+* Stripped zero values from exported point data.  These are unnecessary.
+
+----USeq_8.4.8----
+MergePairedSamAlignments
+* New app for merging paired sam alignments.  Geared for processing exome and whole genome data.  Lots of paired stats. Will merge repeat matches.
+SamTranscriptomeParser
+* Various fixes for issues with merging paired reads with insertions and deletions that preceed the start of the second downstream read.
+
+----USeq_8.4.7----
+SamTranscriptomeParser
+* Fixed bug that was throwing out the 2nd pair in a paired alignment when it was identical to the first.
+* Added an option to merge proper paired alignments. Lots of heavy lifting here.
+* Deleted all of the confusing post processing statistics
+* Made not reversing the strand of the second pair the default
+* Changed the default maximum alignment score to 90 instead of 60
+
+----USeq_8.4.6----
+CompareIntersectingRegions 
+* New app for comparing hits to a master list of regions given one or more test region files.  Good for ranking master regions by number of hits from other lists.
+SamAlignmentExtractor
+* Added feature to put header from first bam file onto output gzipped sam file.
+RNAEditingPileUpParser
+* Added a check for base fraction editing that is > 1 due to weirdness with mpileup output.
+* Added feature to output PointData for Edited and Reference A positions for use with downstream methylome analysis apps.
+* Fixed a bug that was counting mpileup INDEL bases as edited bases.
+Sam2USeq
+* Added feature to take a file of regions and calculate base coverage statistics.  
+
+----USeq_8.4.5----
+Sam2USeq
+* Fixed a bug with generating regions passing a defined read coverage.  If relative graphs were being generated then the app was thresholding for high coverage regions using the relative score instead of the read count.
+SamTranscriptomeParser
+* Added a checker for broken zero exon length splice junctions in alignments.  A warning is now thrown and these are skipped.
+* For unique paired alignments, fixed the mate referenced and mate position for those hitting splice or transcript junctions.  These were still pointing to their non genomic coordinates.
+UCSCGeneModelTableReader
+* Added checker for zero length exons.  This will effect every USeq app that loads a UCSC gene table. It aborts if found.
+
+----USeq_8.4.4----
+MultipleReplicaScanSeqs
+* Modified check for DESeq error message when dispersion fit fails.  New DESeq is using a different error message!  
+FilterPointData
+* Added another check to limit filtering for regions that go beyond the end of a chromosome
+All apps
+* Reorganized the USeq code base and MakeUSeq app to support an Eclipse centric SNV.
+* Wrote up instructions on how build an Eclipse USeq project linked to the Sourceforge SVN and deploy modified USeq packages. See Documentation/buildingUSeqFromEclipseSVN.txt
+
+----USeq_8.4.3----
+SamParser
+* Added fix for parser to skip xxx.bai indexes when parsing bam files
+Many apps
+* Upgraded from org.apache.commons.math... to math3 for all chiSquare tests
+USeq2Text and USeq2UCSCBig
+* Added check for rare cases when the first two useq regions overlap.  The UCSC converters were throwing errors when encountering these during the USeq-> bw conversion.
+ScoreChromosomes
+* Added ability to work with gzip compressed fasta files.
+* Fixed bug causing MultipleFastaParser to mis read gzipped files.
+
+----USeq_8.4.2----
+SamAlignmentExtractor
+* Added an application to extract SAM/BAM alignments that overlap regions in a bed file.
+
+----USeq_8.4.1----
+FetchGenomicSequence
+* Added option to export fasta format
+* Fixed multiple file select when providing a directory
+
+----USeq_8.4.0----
+DefinedRegionDifferentialSeq
+* Added gzipper to geneStats.xls output
+* Added bed file output for each condition comparison
+* Added an option to exclude alignments that align to more than one location.  This uses the IH flag set by running the SamTranscriptomeParser on your raw alignments.
+* Added a description of the columns to the usageRNASeq.html and outputFileTypeDescriptions.html documents 
+* Added a read depth maximum, defaulting to 20K.  Genes/ regions containing one or more bases with with more than 20K overlapping alignments are excluded from the analyis.  This was needed to prevent rRNA contaminated libraries from spiking the application's memory.  It is also proving useful for excluding a few genes from driving DESeq's library abundance estimation with extreem read counts.
+NovoalignBisulfiteParser
+* Modified base level score checking to ignore reads with INDELs.  This was causing a mis reference to an incorrect score for the indel and potentially excluding it from the analysis. In some cases this also fixed a mis base score reference to non indel reads.
+
+----USeq_8.3.9----
+BisStat
+* Added a catch to skip base context scanning when no data was found for a particular chromosome.
+AggregatePlotter
+* Added an option to average scores between shared bases across collapsed regions instead of summing.  This is useful for methylation analysis with the BisStat BaseFraction methylation data.
+DefinedRegionDifferentialSeq
+* Eliminated empty space columns from spread sheet output.  This feature was causing problems in Excel when selecting data for sorting.
+AllelicMethylationDetector
+* Added option to scan and score a user defined set of regions for allelic methylation
+* Added a final sum total graph for all regions that passed thresholds
+All Apps
+* Added a call to all Apps to print the USeq_xxx version in the Arguments prior to running
+
+----USeq_8.3.8----
+Sam2USeq
+* Fixed a bug that might effect some relative read coverage graphs when trying to convert the xxx.useq results files to xxx.bw for visualization in IGV and the UCSC Browser.  A rounding error after scaling was causing some data to look the same when infact it wasn't causing multiple stair step regions to be generated with the same position and score values.  
+BisSeqAggregatePlotter
+* Fixed a bug that was causing app to not merge data across chromosomes, thus old analysis only generated aggregates from the last chromosome of data.
+
