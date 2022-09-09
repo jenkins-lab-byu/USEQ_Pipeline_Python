@@ -1,49 +1,11 @@
 print("Loading Packages...")
+print("")
+print("Importing pandas as pd")
 import pandas as pd
-# import numpy as np 
+print("Importing argparse")
 import argparse
-# import seaborn as sns
-# import matplotlib.pyplot as plt
-# from sklearn.preprocessing import StandardScaler
-# import pyreadr
+print("Importing os")
 import os
-
-
-##  Reading in sample_sheet
-# sample_sheet = pd.read_csv("/Volumes/Research_Data/Research_Datasets/Brain_Tissue/Alzheimers_OC_FC_TC_450K/sample_sheet.csv",header = 0, index_col=0)
-# sample_sheet.iloc[:]
-
-
-# #  If you need to subset for a specific control sample type you can
-# control_subset = []
-# for i in sample_sheet.index:
-#     if sample_sheet.loc[i,"Cell_Type"] == "bulk_CTRL_Frontal Cortex" or sample_sheet.loc[i,"Cell_Type"] == "bulk_CTRL_Temporal Cortex":
-#         control_subset.append(i)
-# print(len(control_subset))
-# beta_values = pd.read_csv("/Volumes/Research_Data/Research_Datasets/Brain_Tissue/Alzheimers_OC_FC_TC_450K/Occipital_Frontal_Temporal_450K_beta_values.csv",header = 0,index_col = 0)
-# control = beta_values.loc[:,control_subset]
-# control.to_csv("/Volumes/Research_Data/USEQ_Analyses/Bulk_vs_Bulk_AD/bulk_control_betas.csv")
-# control.iloc[:]
-
-
-# #  If you need to subset for a specific treatment sample type you can
-# treatment_subset = []
-# for i in sample_sheet.index:
-#     if sample_sheet.loc[i,"Cell_Type"] == "bulk_AD_Frontal Cortex" or sample_sheet.loc[i,"Cell_Type"] == "bulk_AD_Temporal Cortex":
-#         treatment_subset.append(i)
-# print(len(treatment_subset))
-# # beta_values = pd.read_csv("/Volumes/Research_Data/Research_Datasets/Blood_Plasma/Prostate_Study_450K/Prostate_Study_450K_beta_values.csv",header = 0,index_col = 0)
-# treatment = beta_values.loc[:,treatment_subset]
-# treatment.to_csv("/Volumes/Research_Data/USEQ_Analyses/Bulk_vs_Bulk_AD/bulk_ad_betas.csv")
-# treatment.iloc[:]
-
-
-# ann_EPIC = pd.read_csv("/Volumes/Research_Data/My_Github/USEQ-Pipeline/Annotation_Files/450k_annotation.csv",header = 0,index_col = 0,dtype=str)
-# ann_EPIC.iloc[:]
-# mydf = pd.merge(ann_EPIC,control,left_index=True,right_index=True)
-# mydf = pd.merge(mydf,treatment,left_index=True,right_index=True)
-# mydf.iloc[:]
-
 
 ###############
 ## ARGUMENTS ##
@@ -67,10 +29,12 @@ USEQ_Prep=args.USEQ_Prep
 # Set directory where you want the USEQ_Prep directory and files to be put
 path_to_my_dir = base_dir
 os.chdir(path_to_my_dir)
+print("")
 print("Home Directory has been set to", path_to_my_dir)
 path_to_USEQ_Prep = USEQ_Prep
 
 # Read Control Betas, Treatment Betas, and the desired annotation file (This one is EPIC)
+print("")
 print("Reading in Control Beta Values")
 control = pd.read_csv(control_betas,header = 0,index_col = 0)
 print("Reading in Treatment Beta Values")
@@ -83,6 +47,7 @@ print("Merging Annotation File")
 print("Merging Control Betas File")
 mydf = pd.merge(ann_EPIC,control,left_index=True,right_index=True)
 print("Merging Treatment Betas File")
+print("")
 mydf = pd.merge(mydf,treatment,left_index=True,right_index=True)
 mydf.iloc[:5,:]
 
