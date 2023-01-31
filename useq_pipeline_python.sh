@@ -1,7 +1,7 @@
 ### Paths to necessary files for USEQ Analysis
 
 # Path to base directory where you want your USEQ files to be created. Don't forget to add a "/" at the end as we want the files to be created inside this directory.
-base_dir="/Users/chadpollard/Desktop/Air_Quality_Study/"
+base_dir="/Users/chadpollard/Desktop/Air_Quality_Study/R_VS_S/"
 
 # Path to Control Beta values (Make sure it is a .csv file CG's are in the rows and sample names are in the columns)
 control_betas="/Users/chadpollard/Desktop/Air_Quality_Study/S_P_beta_values.csv"
