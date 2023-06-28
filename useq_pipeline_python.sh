@@ -1,13 +1,13 @@
 ### Paths to necessary files for USEQ Analysis
 
 # Path to base directory where you want your USEQ files to be created. Don't forget to add a "/" at the end as we want the files to be created inside this directory.
-base_dir="/Users/chadpollard/Desktop/Air_Quality_Study/R_VS_S/"
+base_dir="/Volumes/Research_Data/Research_Datasets/USEQ_Analyses/Pancreatic_Beta_Cells_vs_Blood_Plasma/"
 
 # Path to Control Beta values (Make sure it is a .csv file CG's are in the rows and sample names are in the columns)
-control_betas="/Users/chadpollard/Desktop/Air_Quality_Study/S_P_beta_values.csv"
+control_betas="/Volumes/Research_Data/Research_Datasets/USEQ_Analyses/Pancreatic_Beta_Cells_vs_Blood_Plasma/pancreatic_beta_cells_beta_values.csv"
 
 # Path to Treatment Beta values (Make sure it is a .csv file and that CG's are in the rows and sample names are in the columns)
-treatment_betas="/Users/chadpollard/Desktop/Air_Quality_Study/R_P_beta_values.csv"
+treatment_betas="/Volumes/Research_Data/Research_Datasets/Blood_Plasma/Prostate_Study_450K/Prostate_Study_450K_beta_values.csv"
 
 # Path to Annotation File (Make sure it is a .csv file and that CG's are in the rows and that CHR and START are in the columns)
 illumina_annotation="/Volumes/Research_Data/Jenkins_Lab_Github/USEQ_Pipeline_Python/Annotation_Files/EPIC_array_annotation.csv"
@@ -25,10 +25,10 @@ MethylationArrayScanner="/Volumes/Research_Data/Jenkins_Lab_Github/USEQ_Pipeline
 EnrichedRegionMaker="/Volumes/Research_Data/Jenkins_Lab_Github/USEQ_Pipeline_Python/USeq_9.3.3/Apps/EnrichedRegionMaker"
 
 # Path to Control group names (Must be comma delimited with no spaces)
-Control_Samples=203010900034_R02C01,203010900034_R08C01,203011620056_R01C01,203011620056_R02C01,203011620056_R03C01,203013220102_R06C01,203013220106_R04C01,203017150072_R07C01,203020780073_R01C01,203020780073_R02C01,203020780073_R03C01,203020780073_R04C01,203020780073_R05C01,203021070138_R01C01,203021070138_R02C01,203021070138_R03C01,203021070138_R04C01,203021070138_R08C01,203026840036_R08C01,203026840080_R06C01
+Control_Samples=GSM3455765_7990895122_R01C01,GSM3455766_7990895122_R01C02,GSM3455767_7990895122_R04C01
 
 # Path to Testing group names (Must be comma delimited with no spaces)
-Treatment_Samples=203010900034_R04C01,203010900034_R05C01,203010900034_R06C01,203010900034_R07C01,203011620056_R04C01,203011620056_R07C01,203011620056_R08C01,203013220102_R03C01,203013220102_R04C01,203013220102_R07C01,203013220102_R08C01,203017150072_R02C01,203017150072_R04C01,203017150072_R08C01,203020780073_R06C01,203021070138_R06C01,203026840036_R06C01,203026840044_R02C01,203026840080_R07C01
+Treatment_Samples=GSM2898875_3999720090_R06C01,GSM2898876_3999720090_R05C01,GSM2898877_3999720090_R02C01,GSM2898878_3999720090_R04C01,GSM2898879_3999720090_R03C01,GSM2898880_3999720090_R01C02,GSM2898881_3999720090_R04C02,GSM2898882_3999720090_R03C02,GSM2898883_3999720090_R02C02,GSM2898884_3999720090_R06C02,GSM2898885_3999720090_R01C01,GSM2898886_3999688032_R02C02,GSM2898887_3999688032_R03C01,GSM2898888_3999688032_R01C01,GSM2898889_3999688032_R05C02,GSM2898890_3999688032_R05C01,GSM2898891_3999688032_R06C01,GSM2898892_3999688032_R06C02,GSM2898893_3999688032_R04C02
 
 
 
@@ -111,7 +111,7 @@ echo "**** Creating Forward Output Using Enriched Region Maker App ****"
 echo ""
 
 #Creating output using enriched region maker app
-java -jar $EnrichedRegionMaker -f ../USEQ_Results_Forward/windowData1000bp0.2MinPse.swi -i 0,1 -s 0.2,10
+java -jar $EnrichedRegionMaker -f ../USEQ_Results_Forward/windowData1000bp0.2MinPse.swi -i 0,1 -s 0.2,13
 
 
 ###########
@@ -132,5 +132,5 @@ echo "**** Creating Reverse Output Using Enriched Region Maker App ****"
 echo ""
 
 #Creating output using enriched region maker app
-java -jar $EnrichedRegionMaker -f ../USEQ_Results_Reverse/windowData1000bp0.2MinPse.swi -i 0,1 -s 0.2,10
+java -jar $EnrichedRegionMaker -f ../USEQ_Results_Reverse/windowData1000bp0.2MinPse.swi -i 0,1 -s 0.2,13
 echo "Finished!"
