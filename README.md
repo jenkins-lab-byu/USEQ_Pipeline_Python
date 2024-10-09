@@ -1,13 +1,14 @@
 # Steps to running this USEQ-Pipeline
-This is a sliding window pipeline that uses the USEQ tool from the Universtiry of Utah to do a whole genome scan on Illumina Methylation Array data to find differentially methylated regions between two sample groups.
+This is a sliding window pipeline that uses the USEQ tool from the Universtiry of Utah to do a whole genome scan on Illumina Methylation Array data to find differentially methylated regions between two sample groups. It can be run for 450k, EPIC, or EPICv2 data. There is one folder for 450k or EPIC, and one for EPICv2. So just make sure you are adding pathnames to the appropriate files depending on your data that you are analyzing.
 
 Note: Before running the pipeline you will need to download this repository to your computer and open the 'useq_pipeline.sh' file. Then make the following changes to the file.
 
-## R-packages Required for this pipeline
-  1. Minfi
+## Python Packages Required for this pipeline
+  1. pandas
   2. argparse
+  3. os
 
-### 1. Add the pathname to the base directory where you want your USEQ files to be created. Don't forget to add a "/" at the end as we want the files to be created inside this directory.
+### 1. Open up the 'useq_pipeline_python.sh' or the 'useq_pipeline_python_epicv2.sh' file and add the pathname to the base directory where you want your USEQ files to be created. Don't forget to add a "/" at the end as we want the files to be created inside this directory.
 example:
 base_dir="/Volumes/Research_Data/USEQ_Analyses/Completed_Studies/Blood_vs_Neurons/Orbital_Frontal_Cortex_vs_Blood/"
 
@@ -23,7 +24,7 @@ treatment_betas="/Volumes/Research_Data/Renew_Diagnostics/Alzheimers_Study/Micro
 example:
 illumina_annotation="/Volumes/Research_Data/USEQ_Analyses/Annotation_Files/450k_annotation.csv"
 
-### 5. Path to the 'Python_script.py script' file provided in this repository
+### 5. Path to the 'Python_script.py script' or 'Python_script_epicv2.py' file provided in this repository
 example:
 sgr_script="/Volumes/Research_Data/USEQ_Analyses/Python_script.py"
 
