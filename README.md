@@ -25,7 +25,7 @@ illumina_annotation="/Volumes/Research_Data/USEQ_Analyses/Annotation_Files/450k_
 
 ### 5. Path to the 'Python_script.py script' file provided in this repository
 example:
-sgr_script="/Volumes/Research_Data/USEQ_Analyses/useq_prep_r.R"
+sgr_script="/Volumes/Research_Data/USEQ_Analyses/Python_script.py"
 
 ### 6. Path to the Sgr2Bar program in the apps folder of the 'USeq_9.3.3' folder provided in this repository
 example:
