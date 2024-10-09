@@ -23,7 +23,7 @@ treatment_betas="/Volumes/Research_Data/Renew_Diagnostics/Alzheimers_Study/Micro
 example:
 illumina_annotation="/Volumes/Research_Data/USEQ_Analyses/Annotation_Files/450k_annotation.csv"
 
-### 5. Path to the 'R_Script.R script' file provided in this repository
+### 5. Path to the 'Python_script.py script' file provided in this repository
 example:
 sgr_script="/Volumes/Research_Data/USEQ_Analyses/useq_prep_r.R"
 
