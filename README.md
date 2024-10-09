@@ -3,9 +3,10 @@ This is a sliding window pipeline that uses the USEQ tool from the Universtiry o
 
 Note: Before running the pipeline you will need to download this repository to your computer and open the 'useq_pipeline.sh' file. Then make the following changes to the file.
 
-## R-packages Required for this pipeline
-  1. Minfi
+## Python Packages Required for this pipeline
+  1. pandas
   2. argparse
+  3. os
 
 ### 1. Add the pathname to the base directory where you want your USEQ files to be created. Don't forget to add a "/" at the end as we want the files to be created inside this directory.
 example:
