@@ -8,7 +8,7 @@ Note: Before running the pipeline you will need to download this repository to y
   2. argparse
   3. os
 
-### 1. Add the pathname to the base directory where you want your USEQ files to be created. Don't forget to add a "/" at the end as we want the files to be created inside this directory.
+### 1. Open up the 'useq_pipeline_python.sh' or the 'useq_pipeline_python_epicv2.sh' file and add the pathname to the base directory where you want your USEQ files to be created. Don't forget to add a "/" at the end as we want the files to be created inside this directory.
 example:
 base_dir="/Volumes/Research_Data/USEQ_Analyses/Completed_Studies/Blood_vs_Neurons/Orbital_Frontal_Cortex_vs_Blood/"
 
